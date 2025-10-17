@@ -1,223 +1,107 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Homework Bot — Панель</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script defer src="./assets/app.js"></script>
-  <link rel="stylesheet" href="./assets/style.css">
+  <meta charset="UTF-8">
+  <title>Homework Bot — WebApp</title>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
   <div id="app">
     <header class="header">
-      <h1>Homework Bot — Веб‑панель</h1>
-      <div id="tg-user" class="muted"></div>
+      <h1>Homework Bot — Веб-панель</h1>
+      <div class="header-actions">
+        <button id="btn-select-class" class="secondary">🏫 Класс</button>
+        <button id="btn-theme" class="secondary">🌓 Тема</button>
+        <div id="tg-user" class="muted"></div>
+      </div>
     </header>
-
     <nav class="tabs">
       <button data-tab="home" class="tab active">🏠 Главная</button>
       <button data-tab="homework" class="tab">📖 ДЗ</button>
       <button data-tab="schedule" class="tab">🗓 Расписание</button>
       <button data-tab="rebuses" class="tab">🎮 Ребусы</button>
-      <button data-tab="users" class="tab">👥 Пользователи</button>
-      <button data-tab="classes" class="tab">🏫 Классы</button>
       <button data-tab="admin" class="tab">🛡 Админ</button>
-      <button data-tab="broadcast" class="tab">📣 Оповещения</button>
-      <button data-tab="modes" class="tab">🧰 Режимы</button>
-      <button data-tab="stats" class="tab">📊 Статистика</button>
       <button data-tab="about" class="tab">ℹ️ О проекте</button>
     </nav>
 
-    <main>
-      <section id="tab-home" class="panel visible">
-        <h2>Добро пожаловать 👋</h2>
-        <p>Это веб‑панель для вашего телеграм‑бота с домашними заданиями, расписанием и игрой «Ребус».</p>
-        <ul class="list">
-          <li>Быстрый просмотр ДЗ и расписания</li>
-          <li>Админ‑функции: рассылки, каникулы, техработы, блокировки</li>
-          <li>Ребусы: управление и топ</li>
-        </ul>
-        <div class="callout">
-          <b>Режимы работы:</b> панель умеет работать в двух режимах:
-          <ol>
-            <li><b>Статический (GitHub Pages)</b> — всё хранится в LocalStorage для теста.</li>
-            <li><b>API‑режим</b> — подключение к вашему backend по адресу <code>API_BASE</code>.</li>
-          </ol>
-        </div>
+    <main id="main">
+      <section id="tab-home" class="panel active">
+        <h2>🏠 Главная</h2>
+        <p>Добро пожаловать в веб-панель Homework Bot.</p>
       </section>
 
       <section id="tab-homework" class="panel">
-        <h2>📖 Домашнее задание</h2>
-        <div class="grid">
-          <div>
-            <label>Дата (ГГГГ‑ММ‑ДД)</label>
-            <input id="hw-date" type="date"/>
-          </div>
-          <div class="actions">
-            <button id="btn-hw-today">Сегодня</button>
-            <button id="btn-hw-tomorrow">Завтра</button>
-            <button id="btn-hw-load">Показать</button>
-          </div>
-        </div>
-        <pre id="hw-out" class="box muted">Здесь появится ДЗ</pre>
+        <h2>📖 Домашка</h2>
+        <div class="grid"><input id="hw-date" placeholder="Дата (YYYY-MM-DD)"><button id="btn-hw-load">Показать</button></div>
+        <pre id="hw-out" class="box"></pre>
       </section>
 
       <section id="tab-schedule" class="panel">
         <h2>🗓 Расписание</h2>
-        <div class="grid">
-          <select id="sch-kind">
-            <option value="today">На сегодня</option>
-            <option value="tomorrow">На завтра</option>
-            <option value="alldays">На неделю</option>
-            <option value="bells">Звонки</option>
-          </select>
-          <button id="btn-sch-load">Показать</button>
-        </div>
-        <div id="sch-out" class="gallery"></div>
+        <div class="grid"><select id="sch-kind"><option value="today">Сегодня</option><option value="tomorrow">Завтра</option><option value="week">Неделя</option><option value="bells">Звонки</option></select><button id="btn-sch-load">Показать</button></div>
+        <div id="sch-out" class="box"></div>
       </section>
 
       <section id="tab-rebuses" class="panel">
         <h2>🎮 Ребусы</h2>
-        <div class="grid">
-          <button id="btn-reb-list">Показать все</button>
-          <button id="btn-reb-top">Топ игроков</button>
-        </div>
-        <div id="reb-out" class="box"></div>
+        <div class="grid"><button id="btn-reb-list">Показать все</button><button id="btn-reb-top">Топ игроков</button></div>
+        <pre id="reb-out" class="box"></pre>
       </section>
-
-      <section id="tab-users" class="panel">
-        <h2>👥 Пользователи</h2>
-        <div class="grid">
-          <input id="user-id" type="number" placeholder="UserId…" />
-          <button id="btn-user-get">Найти</button>
-          <button id="btn-users-all">Все</button>
-        </div>
-        <div id="users-out" class="box"></div>
-      </section>
-
-      
-        <h2>🏫 Классы</h2>
-        <div class="grid">
-          <input id="class-id" type="number" placeholder="ClassId…" />
-          <button id="btn-class-get">Найти</button>
-          <button id="btn-classes-all">Все</button>
-        </div>
-        <div id="classes-out" class="box"></div>
-      </section>
-
 
       <section id="tab-admin" class="panel">
         <h2>🛡 Админ-панель</h2>
-        <div class="split">
-          <div class="card">
-            <h3>Домашка — добавить/обновить</h3>
-            <div class="grid">
-              <input id="adm-hw-date" type="date" />
-              <textarea id="adm-hw-text" rows="4" placeholder="Текст ДЗ…"></textarea>
-              <button id="btn-adm-hw-save">Сохранить</button>
-              <button id="btn-adm-hw-del" class="secondary">Удалить по дате</button>
-            </div>
-            <div id="adm-hw-out" class="muted"></div>
-          </div>
-          <div class="card">
-            <h3>Ребусы — управление</h3>
-            <div class="grid">
-              <input id="adm-reb-kind" placeholder="Категория (например: word)" />
-              <input id="adm-reb-payload" placeholder="Тело ребуса (текст)" />
-              <input id="adm-reb-answer" placeholder="Ответ" />
-              <input id="adm-reb-hint" placeholder="Подсказка (необязательно)" />
-              <select id="adm-reb-diff">
-                <option value="easy">easy</option>
-                <option value="medium" selected>medium</option>
-                <option value="hard">hard</option>
-              </select>
-              <button id="btn-adm-reb-add">Добавить</button>
-            </div>
-            <div class="grid">
-              <input id="adm-reb-id" type="number" placeholder="ID ребуса для удаления" />
-              <button id="btn-adm-reb-del" class="secondary">Удалить по ID</button>
-              <button id="btn-adm-reb-purge" class="secondary">Удалить все</button>
-              <button id="btn-adm-reb-list" class="secondary">Показать все</button>
-            </div>
-            <pre id="adm-reb-out" class="box"></pre>
-          </div>
+        <div class="admin-shortcuts">
+          <button class="secondary" id="btn-open-classes">🏫 Классы</button>
+          <button class="secondary" id="btn-open-schedule">🗓 Добавить расписание</button>
         </div>
-
-        
-          <div class="card">
-            <h3>Статистика (за 14 дней + суммарно)</h3>
-            <div class="grid">
-              <button id="btn-adm-stats">Обновить</button>
-            </div>
-            <pre id="adm-stats-out" class="box"></pre>
-          </div>
-
-          <div class="card">
-            <h3>Пользователи — блокировка</h3>
-            <div class="grid">
-              <input id="adm-user-id" type="number" placeholder="User ID" />
-              <button id="btn-adm-user-block">Заблокировать</button>
-              <button id="btn-adm-user-unblock" class="secondary">Разблокировать</button>
-            </div>
-            <div id="adm-user-out" class="muted"></div>
-          </div>
-          <div class="card">
-            <h3>Расписание — добавить файл</h3>
-            <div class="grid">
-              <select id="adm-sch-kind">
-                <option value="today">today</option>
-                <option value="tomorrow">tomorrow</option>
-                <option value="alldays">alldays</option>
-                <option value="bells">bells</option>
-              </select>
-              <input id="adm-sch-fileid" placeholder="Telegram file_id" />
-              <button id="btn-adm-sch-add">Добавить</button>
-              <button id="btn-adm-sch-clear" class="secondary">Очистить раздел</button>
-            </div>
-            <div id="adm-sch-out" class="muted"></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="tab-broadcast" class="panel">
-        <h2>📣 Оповещения</h2>
+        <h3>📣 Оповещения</h3>
         <div class="grid">
-          <textarea id="bc-text" placeholder="Текст сообщения…" rows="3"></textarea>
+          <textarea id="bc-text" placeholder="Текст сообщения… (если пусто — возьмётся авто-текст)" rows="3"></textarea>
           <div class="actions">
             <button id="btn-bc-all">Всем пользователям</button>
-            <button id="btn-bc-homework">Только ДЗ</button>
+            <button id="btn-bc-auto-hw">Авто-ДЗ</button>
+            <button id="btn-bc-auto-hw-sch">Авто-ДЗ+расписание</button>
           </div>
         </div>
-        <div id="bc-out" class="muted"></div>
-      </section>
-
-      <section id="tab-modes" class="panel">
-        <h2>🧰 Режимы</h2>
-        <div class="grid">
-          <label><input type="checkbox" id="mode-vac"/> Каникулы</label>
-          <label><input type="checkbox" id="mode-maint"/> Техработы</label>
-          <button id="btn-modes-save">Сохранить</button>
-        </div>
-        <div id="modes-out" class="muted"></div>
-      </section>
-
-      <section id="tab-stats" class="panel">
-        <h2>📊 Статистика</h2>
-        <button id="btn-stats-load">Обновить</button>
-        <pre id="stats-out" class="box"></pre>
+        <pre id="bc-out" class="box"></pre>
       </section>
 
       <section id="tab-about" class="panel">
         <h2>ℹ️ О проекте</h2>
-        <p>UI вдохновлён вашими примерами <code>repository‑1…16</code>, адаптировано под структуру БД текущего бота.</p>
-        <p>Исходники: <code>index.html</code>, <code>assets/app.js</code>, <code>assets/style.css</code>. Бэкенд опционально <code>webapi.py</code> (FastAPI).</p>
+        <p>Это веб-панель для бота домашних заданий и расписания. Поддерживает работу как из Telegram (WebApp), так и в обычном браузере.</p>
+        <ul class="list">
+          <li>ДЗ, расписание, ребусы, пользователи, классы, режимы, статистика.</li>
+          <li>Тёмная/светлая тема (кнопка 🌓).</li>
+          <li>Чтобы пользоваться ДЗ/расписанием — выберите класс (кнопка 🏫 в шапке).</li>
+        </ul>
+        <p class="muted">Версия интерфейса: v4.</p>
       </section>
     </main>
+
     <footer class="muted">© 2025 Homework Bot</footer>
   </div>
+
+  <!-- Модальное окно выбора класса -->
+  <div id="class-modal" class="modal hidden">
+    <div class="modal-card">
+      <h3>Выбор класса</h3>
+      <p class="muted">Чтобы пользоваться ДЗ и расписанием — выберите класс.</p>
+      <div class="grid">
+        <input id="cls-q" placeholder="Поиск по названию/школе/городу">
+        <button id="btn-cls-search">Искать</button>
+        <button id="btn-cls-all">Все</button>
+      </div>
+      <div class="grid">
+        <input id="cls-id" type="number" placeholder="ID класса для вступления">
+        <input id="cls-joincode" placeholder="Код приглашения (если требуется)">
+        <button id="btn-cls-join">Вступить</button>
+      </div>
+      <pre id="cls-list-out" class="box" style="max-height:240px;overflow:auto"></pre>
+      <div class="modal-actions"><button id="btn-cls-close" class="secondary">Закрыть</button></div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
 </body>
 </html>
