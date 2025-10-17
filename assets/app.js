@@ -2,6 +2,10 @@
 // helpers
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
+// Allow passing API base via query (?api=https://host) so that TG webview has it
+const __qp = new URLSearchParams(location.search);
+const __apiFromQ = __qp.get('api');
+if(__apiFromQ){ localStorage.setItem('api_base', __apiFromQ); }
 let API_BASE = localStorage.getItem('api_base') || '';
 
 // Telegram initData (for admin)
@@ -42,6 +46,7 @@ $('#btn-open-hw-from-home')?.addEventListener('click', ()=>{ if(ensureClassSelec
     const elTab = document.querySelector('button[data-tab="admin"]');
     const elPanel = $('#tab-admin');
     if(isAdmin){ elTab.style.display=''; elPanel.style.display=''; } else { elTab.style.display='none'; elPanel.style.display='none'; }
+    document.getElementById('tg-user').title = 'API=' + (API_BASE||'-');
     $('#tg-user').textContent = me.username ? ('@'+me.username) : (me.user_id || '');
   }catch(e){}
 })();
