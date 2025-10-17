@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Homework Bot — Панель</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script defer src="./assets/app.js"></script>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <h1>Homework Bot — Веб‑панель</h1>
+      <div id="tg-user" class="muted"></div>
+    </header>
+
+    <nav class="tabs">
+      <button data-tab="home" class="tab active">🏠 Главная</button>
+      <button data-tab="homework" class="tab">📖 ДЗ</button>
+      <button data-tab="schedule" class="tab">🗓 Расписание</button>
+      <button data-tab="rebuses" class="tab">🎮 Ребусы</button>
+      <button data-tab="users" class="tab">👥 Пользователи</button>
+      <button data-tab="classes" class="tab">🏫 Классы</button>
+      <button data-tab="broadcast" class="tab">📣 Оповещения</button>
+      <button data-tab="modes" class="tab">🧰 Режимы</button>
+      <button data-tab="stats" class="tab">📊 Статистика</button>
+      <button data-tab="about" class="tab">ℹ️ О проекте</button>
+    </nav>
+
+    <main>
+      <section id="tab-home" class="panel visible">
+        <h2>Добро пожаловать 👋</h2>
+        <p>Это веб‑панель для вашего телеграм‑бота с домашними заданиями, расписанием и игрой «Ребус».</p>
+        <ul class="list">
+          <li>Быстрый просмотр ДЗ и расписания</li>
+          <li>Админ‑функции: рассылки, каникулы, техработы, блокировки</li>
+          <li>Ребусы: управление и топ</li>
+        </ul>
+        <div class="callout">
+          <b>Режимы работы:</b> панель умеет работать в двух режимах:
+          <ol>
+            <li><b>Статический (GitHub Pages)</b> — всё хранится в LocalStorage для теста.</li>
+            <li><b>API‑режим</b> — подключение к вашему backend по адресу <code>API_BASE</code>.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="tab-homework" class="panel">
+        <h2>📖 Домашнее задание</h2>
+        <div class="grid">
+          <div>
+            <label>Дата (ГГГГ‑ММ‑ДД)</label>
+            <input id="hw-date" type="date"/>
+          </div>
+          <div class="actions">
+            <button id="btn-hw-today">Сегодня</button>
+            <button id="btn-hw-tomorrow">Завтра</button>
+            <button id="btn-hw-load">Показать</button>
+          </div>
+        </div>
+        <pre id="hw-out" class="box muted">Здесь появится ДЗ</pre>
+      </section>
+
+      <section id="tab-schedule" class="panel">
+        <h2>🗓 Расписание</h2>
+        <div class="grid">
+          <select id="sch-kind">
+            <option value="today">На сегодня</option>
+            <option value="tomorrow">На завтра</option>
+            <option value="alldays">На неделю</option>
+            <option value="bells">Звонки</option>
+          </select>
+          <button id="btn-sch-load">Показать</button>
+        </div>
+        <div id="sch-out" class="gallery"></div>
+      </section>
+
+      <section id="tab-rebuses" class="panel">
+        <h2>🎮 Ребусы</h2>
+        <div class="grid">
+          <button id="btn-reb-list">Показать все</button>
+          <button id="btn-reb-top">Топ игроков</button>
+        </div>
+        <div id="reb-out" class="box"></div>
+      </section>
+
+      <section id="tab-users" class="panel">
+        <h2>👥 Пользователи</h2>
+        <div class="grid">
+          <input id="user-id" type="number" placeholder="UserId…" />
+          <button id="btn-user-get">Найти</button>
+          <button id="btn-users-all">Все</button>
+        </div>
+        <div id="users-out" class="box"></div>
+      </section>
+
+      <section id="tab-classes" class="panel">
+        <h2>🏫 Классы</h2>
+        <div class="grid">
+          <input id="class-id" type="number" placeholder="ClassId…" />
+          <button id="btn-class-get">Найти</button>
+          <button id="btn-classes-all">Все</button>
+        </div>
+        <div id="classes-out" class="box"></div>
+      </section>
+
+      <section id="tab-broadcast" class="panel">
+        <h2>📣 Оповещения</h2>
+        <div class="grid">
+          <textarea id="bc-text" placeholder="Текст сообщения…" rows="3"></textarea>
+          <div class="actions">
+            <button id="btn-bc-all">Всем пользователям</button>
+            <button id="btn-bc-homework">Только ДЗ</button>
+          </div>
+        </div>
+        <div id="bc-out" class="muted"></div>
+      </section>
+
+      <section id="tab-modes" class="panel">
+        <h2>🧰 Режимы</h2>
+        <div class="grid">
+          <label><input type="checkbox" id="mode-vac"/> Каникулы</label>
+          <label><input type="checkbox" id="mode-maint"/> Техработы</label>
+          <button id="btn-modes-save">Сохранить</button>
+        </div>
+        <div id="modes-out" class="muted"></div>
+      </section>
+
+      <section id="tab-stats" class="panel">
+        <h2>📊 Статистика</h2>
+        <button id="btn-stats-load">Обновить</button>
+        <pre id="stats-out" class="box"></pre>
+      </section>
+
+      <section id="tab-about" class="panel">
+        <h2>ℹ️ О проекте</h2>
+        <p>UI вдохновлён вашими примерами <code>repository‑1…16</code>, адаптировано под структуру БД текущего бота.</p>
+        <p>Исходники: <code>index.html</code>, <code>assets/app.js</code>, <code>assets/style.css</code>. Бэкенд опционально <code>webapi.py</code> (FastAPI).</p>
+      </section>
+    </main>
+    <footer class="muted">© 2025 Homework Bot</footer>
+  </div>
+</body>
+</html>
