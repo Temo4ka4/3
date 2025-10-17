@@ -1,102 +1,198 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Homework Bot — WebApp</title>
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
   <div id="app">
     <header class="header">
-      <h1>Homework Bot — Веб-панель</h1>
+      <h1>Homework Bot — Веб‑панель</h1>
       <div class="header-actions">
         <button id="btn-select-class" class="secondary">🏫 Класс</button>
         <button id="btn-theme" class="secondary">🌓 Тема</button>
         <div id="tg-user" class="muted"></div>
       </div>
     </header>
+
     <nav class="tabs">
       <button data-tab="home" class="tab active">🏠 Главная</button>
       <button data-tab="homework" class="tab">📖 ДЗ</button>
       <button data-tab="schedule" class="tab">🗓 Расписание</button>
-      <button data-tab="rebuses" class="tab">🎮 Ребусы</button>
-      <button data-tab="admin" class="tab">🛡 Админ</button>
+      <button data-tab="rebuses" class="tab">🎁 Подарки</button>
+      <button data-tab="admin" class="tab admin-only">🛡 Админ</button>
       <button data-tab="about" class="tab">ℹ️ О проекте</button>
     </nav>
 
     <main id="main">
+      <!-- Главная -->
       <section id="tab-home" class="panel active">
-        <h2>🏠 Главная</h2>
-        <p>Добро пожаловать в веб-панель Homework Bot.</p>
+        <div class="welcome">
+          <p>Выберите класс, чтобы пользоваться ДЗ и расписанием.</p>
+          <button id="btn-open-class-from-home" class="secondary">Выбрать класс</button>
+        </div>
       </section>
 
+      <!-- ДЗ -->
       <section id="tab-homework" class="panel">
-        <h2>📖 Домашка</h2>
-        <div class="grid"><input id="hw-date" placeholder="Дата (YYYY-MM-DD)"><button id="btn-hw-load">Показать</button></div>
+        <h2>📖 Домашнее задание</h2>
+        <div class="grid">
+          <input id="hw-date" type="date">
+          <div class="row">
+            <button id="hw-today">Сегодня</button>
+            <button id="hw-tomorrow">Завтра</button>
+            <button id="btn-hw-load">Показать</button>
+          </div>
+        </div>
         <pre id="hw-out" class="box"></pre>
       </section>
 
+      <!-- Расписание -->
       <section id="tab-schedule" class="panel">
         <h2>🗓 Расписание</h2>
-        <div class="grid"><select id="sch-kind"><option value="today">Сегодня</option><option value="tomorrow">Завтра</option><option value="week">Неделя</option><option value="bells">Звонки</option></select><button id="btn-sch-load">Показать</button></div>
-        <div id="sch-out" class="box"></div>
+        <div class="grid">
+          <select id="sch-kind">
+            <option value="today">Сегодня</option>
+            <option value="tomorrow">Завтра</option>
+            <option value="alldays">Неделя</option>
+            <option value="bells">Звонки</option>
+          </select>
+          <button id="btn-sch-load">Показать</button>
+        </div>
+        <div id="sch-out" class="grid-col"></div>
       </section>
 
+      <!-- Ребусы -->
       <section id="tab-rebuses" class="panel">
-        <h2>🎮 Ребусы</h2>
-        <div class="grid"><button id="btn-reb-list">Показать все</button><button id="btn-reb-top">Топ игроков</button></div>
+        <h2>🎁 Подарки и ребусы</h2>
+        <div class="grid">
+          <button id="btn-gift">Подарок</button>
+          <button id="btn-rules">Правила</button>
+          <button id="btn-reb-top">Топ пользователей</button>
+        </div>
         <pre id="reb-out" class="box"></pre>
       </section>
 
-      <section id="tab-admin" class="panel">
-        <h2>🛡 Админ-панель</h2>
+      <!-- Админ -->
+      <section id="tab-admin" class="panel admin-only">
+        <h2>🛡 Админ‑панель</h2>
+
         <div class="admin-shortcuts">
           <button class="secondary" id="btn-open-classes">🏫 Классы</button>
           <button class="secondary" id="btn-open-schedule">🗓 Добавить расписание</button>
         </div>
-        <h3>📣 Оповещения</h3>
-        <div class="grid">
-          <textarea id="bc-text" placeholder="Текст сообщения… (если пусто — возьмётся авто-текст)" rows="3"></textarea>
-          <div class="actions">
-            <button id="btn-bc-all">Всем пользователям</button>
-            <button id="btn-bc-auto-hw">Авто-ДЗ</button>
-            <button id="btn-bc-auto-hw-sch">Авто-ДЗ+расписание</button>
+
+        <div class="split">
+          <div class="card">
+            <h3>Домашка</h3>
+            <div class="grid">
+              <input id="adm-hw-date" type="date">
+              <textarea id="adm-hw-text" rows="4" placeholder="Текст ДЗ…"></textarea>
+              <button id="btn-adm-hw-save">Сохранить</button>
+              <button id="btn-adm-hw-del" class="secondary">Удалить по дате</button>
+            </div>
+            <div id="adm-hw-out" class="muted"></div>
+          </div>
+
+          <div class="card">
+            <h3>Расписание — добавить/очистить</h3>
+            <div class="grid">
+              <select id="adm-sch-kind">
+                <option value="today">today</option>
+                <option value="tomorrow">tomorrow</option>
+                <option value="alldays">alldays</option>
+                <option value="bells">bells</option>
+              </select>
+              <input id="adm-sch-fileid" placeholder="Telegram file_id">
+              <button id="btn-adm-sch-add">Добавить</button>
+              <button id="btn-adm-sch-clear" class="secondary">Очистить раздел</button>
+            </div>
+            <div id="adm-sch-out" class="muted"></div>
           </div>
         </div>
-        <pre id="bc-out" class="box"></pre>
+
+        <div class="split">
+          <div class="card">
+            <h3>Пользователи</h3>
+            <div class="grid">
+              <input id="adm-user-id" type="number" placeholder="User ID">
+              <button id="btn-adm-user-block">Заблокировать</button>
+              <button id="btn-adm-user-unblock" class="secondary">Разблокировать</button>
+            </div>
+            <div id="adm-user-out" class="muted"></div>
+          </div>
+
+          <div class="card">
+            <h3>Оповещения</h3>
+            <div class="grid">
+              <textarea id="bc-text" placeholder="Текст сообщения… (если пусто — авто‑текст)" rows="3"></textarea>
+              <div class="actions">
+                <button id="btn-bc-all">Всем пользователям</button>
+                <button id="btn-bc-auto-hw">Авто‑ДЗ</button>
+                <button id="btn-bc-auto-hw-sch">Авто‑ДЗ+расписание</button>
+              </div>
+            </div>
+            <pre id="bc-out" class="box"></pre>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <h3>Режимы</h3>
+            <div class="grid">
+              <label><input type="checkbox" id="mode-vac"> Каникулы</label>
+              <label><input type="checkbox" id="mode-maint"> Техработы</label>
+              <button id="btn-save-modes">Сохранить</button>
+            </div>
+            <div id="modes-out" class="muted"></div>
+          </div>
+
+          <div class="card">
+            <h3>Статистика</h3>
+            <div class="grid">
+              <button id="btn-adm-stats">Обновить</button>
+            </div>
+            <div id="adm-stats-out" class="box"></div>
+          </div>
+        </div>
       </section>
 
+      <!-- О проекте -->
       <section id="tab-about" class="panel">
         <h2>ℹ️ О проекте</h2>
-        <p>Это веб-панель для бота домашних заданий и расписания. Поддерживает работу как из Telegram (WebApp), так и в обычном браузере.</p>
+        <p>Это веб‑панель для бота домашних заданий и расписания. Работает из Telegram (WebApp) и в обычном браузере.</p>
         <ul class="list">
           <li>ДЗ, расписание, ребусы, пользователи, классы, режимы, статистика.</li>
-          <li>Тёмная/светлая тема (кнопка 🌓).</li>
+          <li>Светлая/тёмная тема (кнопка 🌓).</li>
           <li>Чтобы пользоваться ДЗ/расписанием — выберите класс (кнопка 🏫 в шапке).</li>
         </ul>
-        <p class="muted">Версия интерфейса: v4.</p>
+        <p class="muted">Версия интерфейса: v5.</p>
       </section>
     </main>
 
     <footer class="muted">© 2025 Homework Bot</footer>
   </div>
 
-  <!-- Модальное окно выбора класса -->
+  <!-- Модал "Выбор класса" -->
   <div id="class-modal" class="modal hidden">
     <div class="modal-card">
       <h3>Выбор класса</h3>
       <p class="muted">Чтобы пользоваться ДЗ и расписанием — выберите класс.</p>
+
       <div class="grid">
         <input id="cls-q" placeholder="Поиск по названию/школе/городу">
         <button id="btn-cls-search">Искать</button>
         <button id="btn-cls-all">Все</button>
       </div>
+
       <div class="grid">
         <input id="cls-id" type="number" placeholder="ID класса для вступления">
         <input id="cls-joincode" placeholder="Код приглашения (если требуется)">
         <button id="btn-cls-join">Вступить</button>
       </div>
+
       <pre id="cls-list-out" class="box" style="max-height:240px;overflow:auto"></pre>
       <div class="modal-actions"><button id="btn-cls-close" class="secondary">Закрыть</button></div>
     </div>
