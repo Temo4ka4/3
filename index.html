@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Homework Bot — WebApp</title>
   <link rel="stylesheet" href="assets/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 </head>
 <body>
   <div id="app">
     <header class="header">
-      <h1>Homework Bot — Веб‑панель</h1>
+      <h1>🏠 Главная</h1>
       <div class="header-actions">
         <button id="btn-select-class" class="secondary">🏫 Класс</button>
         <button id="btn-theme" class="secondary">🌓 Тема</button>
@@ -21,17 +22,20 @@
       <button data-tab="home" class="tab active">🏠 Главная</button>
       <button data-tab="homework" class="tab">📖 ДЗ</button>
       <button data-tab="schedule" class="tab">🗓 Расписание</button>
-      <button data-tab="rebuses" class="tab">🎁 Подарки</button>
-      <button data-tab="admin" class="tab admin-only">🛡 Админ</button>
+      <button data-tab="admin" class="tab admin-only" style="display:none">🛡 Админ</button>
       <button data-tab="about" class="tab">ℹ️ О проекте</button>
     </nav>
 
     <main id="main">
       <!-- Главная -->
       <section id="tab-home" class="panel active">
-        <div class="welcome">
-          <p>Выберите класс, чтобы пользоваться ДЗ и расписанием.</p>
-          <button id="btn-open-class-from-home" class="secondary">Выбрать класс</button>
+        <div class="hero">
+          <h2>Homework Bot — веб‑панель</h2>
+          <p class="muted">Быстрый доступ к ДЗ, расписанию и админ‑функциям (для админов).</p>
+          <div class="hero-actions">
+            <button id="btn-open-class-from-home" class="primary">Выбрать класс</button>
+            <button id="btn-open-hw-from-home" class="secondary">Открыть ДЗ</button>
+          </div>
         </div>
       </section>
 
@@ -46,7 +50,7 @@
             <button id="btn-hw-load">Показать</button>
           </div>
         </div>
-        <pre id="hw-out" class="box"></pre>
+        <div id="hw-cards" class="cards"></div>
       </section>
 
       <!-- Расписание -->
@@ -61,28 +65,12 @@
           </select>
           <button id="btn-sch-load">Показать</button>
         </div>
-        <div id="sch-out" class="grid-col"></div>
-      </section>
-
-      <!-- Ребусы -->
-      <section id="tab-rebuses" class="panel">
-        <h2>🎁 Подарки и ребусы</h2>
-        <div class="grid">
-          <button id="btn-gift">Подарок</button>
-          <button id="btn-rules">Правила</button>
-          <button id="btn-reb-top">Топ пользователей</button>
-        </div>
-        <pre id="reb-out" class="box"></pre>
+        <div id="sch-list" class="grid-col"></div>
       </section>
 
       <!-- Админ -->
-      <section id="tab-admin" class="panel admin-only">
+      <section id="tab-admin" class="panel admin-only" style="display:none">
         <h2>🛡 Админ‑панель</h2>
-
-        <div class="admin-shortcuts">
-          <button class="secondary" id="btn-open-classes">🏫 Классы</button>
-          <button class="secondary" id="btn-open-schedule">🗓 Добавить расписание</button>
-        </div>
 
         <div class="split">
           <div class="card">
@@ -97,7 +85,7 @@
           </div>
 
           <div class="card">
-            <h3>Расписание — добавить/очистить</h3>
+            <h3>Расписание — добавить/очистить/список</h3>
             <div class="grid">
               <select id="adm-sch-kind">
                 <option value="today">today</option>
@@ -108,8 +96,9 @@
               <input id="adm-sch-fileid" placeholder="Telegram file_id">
               <button id="btn-adm-sch-add">Добавить</button>
               <button id="btn-adm-sch-clear" class="secondary">Очистить раздел</button>
+              <button id="btn-adm-sch-list" class="secondary">Показать список</button>
             </div>
-            <div id="adm-sch-out" class="muted"></div>
+            <pre id="adm-sch-out" class="box"></pre>
           </div>
         </div>
 
@@ -151,10 +140,11 @@
 
           <div class="card">
             <h3>Статистика</h3>
-            <div class="grid">
-              <button id="btn-adm-stats">Обновить</button>
+            <div class="grid"><button id="btn-adm-stats">Обновить</button></div>
+            <div id="stats-tables">
+              <table id="stats-main"><thead><tr><th>Метрика</th><th>Значение</th></tr></thead><tbody></tbody></table>
+              <canvas id="stats-chart" height="140"></canvas>
             </div>
-            <div id="adm-stats-out" class="box"></div>
           </div>
         </div>
       </section>
@@ -162,13 +152,7 @@
       <!-- О проекте -->
       <section id="tab-about" class="panel">
         <h2>ℹ️ О проекте</h2>
-        <p>Это веб‑панель для бота домашних заданий и расписания. Работает из Telegram (WebApp) и в обычном браузере.</p>
-        <ul class="list">
-          <li>ДЗ, расписание, ребусы, пользователи, классы, режимы, статистика.</li>
-          <li>Светлая/тёмная тема (кнопка 🌓).</li>
-          <li>Чтобы пользоваться ДЗ/расписанием — выберите класс (кнопка 🏫 в шапке).</li>
-        </ul>
-        <p class="muted">Версия интерфейса: v5.</p>
+        <p>Веб‑панель бота. Работает в Telegram и браузере. Тема — 🌓 в шапке. Для доступа к разделам — выбери класс.</p>
       </section>
     </main>
 
