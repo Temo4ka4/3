@@ -231,3 +231,89 @@ def user_unblock(payload: UserIdIn):
         cur = con.cursor()
         cur.execute("UPDATE users SET muted_all=0 WHERE user_id=?", (payload.user_id,))
     return {"ok": True}
+
+
+def ensure_classes_table(con):
+    cur = con.cursor()
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS classes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        school TEXT,
+        city TEXT,
+        shift TEXT,
+        join_code TEXT,
+        info TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )""")
+
+class ClassIn(BaseModel):
+    id: int | None = None
+    title: str
+    school: str | None = None
+    city: str | None = None
+    shift: str | None = None
+    join_code: str | None = None
+    info: str | None = None
+
+class ClassIdIn(BaseModel):
+    id: int
+
+@app.get("/classes")
+def classes_all():
+    with get_conn() as con:
+        ensure_classes_table(con)
+        cur = con.cursor()
+        cur.execute("SELECT id,title,school,city,shift,join_code,info,created_at FROM classes ORDER BY id DESC LIMIT 200")
+        rows = cur.fetchall()
+        return {"classes":[{"id":r[0],"title":r[1],"school":r[2],"city":r[3],"shift":r[4],"join_code":r[5],"info":r[6],"created_at":r[7]} for r in rows]}
+
+@app.get("/classes/search")
+def classes_search(q: str = ""):
+    q = q.strip()
+    with get_conn() as con:
+        ensure_classes_table(con)
+        cur = con.cursor()
+        if q:
+            like = f"%{q}%"
+            cur.execute("""
+                SELECT id,title,school,city,shift,join_code,info,created_at
+                FROM classes
+                WHERE title LIKE ? OR school LIKE ? OR city LIKE ?
+                ORDER BY id DESC LIMIT 200
+            """, (like,like,like))
+        else:
+            cur.execute("SELECT id,title,school,city,shift,join_code,info,created_at FROM classes ORDER BY id DESC LIMIT 200")
+        rows = cur.fetchall()
+        return {"classes":[{"id":r[0],"title":r[1],"school":r[2],"city":r[3],"shift":r[4],"join_code":r[5],"info":r[6],"created_at":r[7]} for r in rows]}
+
+@app.get("/classes/{class_id}")
+def class_by_id(class_id: int):
+    with get_conn() as con:
+        ensure_classes_table(con)
+        cur = con.cursor()
+        cur.execute("SELECT id,title,school,city,shift,join_code,info,created_at FROM classes WHERE id=?", (class_id,))
+        r = cur.fetchone()
+        return {"cls": {"id":r[0],"title":r[1],"school":r[2],"city":r[3],"shift":r[4],"join_code":r[5],"info":r[6],"created_at":r[7]} } if r else {"cls": None}
+
+@app.post("/classes")
+def class_save(payload: ClassIn):
+    with get_conn() as con:
+        ensure_classes_table(con)
+        cur = con.cursor()
+        if payload.id:
+            cur.execute("""UPDATE classes SET title=?, school=?, city=?, shift=?, join_code=?, info=? WHERE id=?""", 
+                        (payload.title, payload.school, payload.city, payload.shift, payload.join_code, payload.info, payload.id))
+            return {"ok": True, "id": payload.id}
+        else:
+            cur.execute("""INSERT INTO classes(title,school,city,shift,join_code,info) VALUES(?,?,?,?,?,?)""", 
+                        (payload.title, payload.school, payload.city, payload.shift, payload.join_code, payload.info))
+            return {"ok": True, "id": cur.lastrowid}
+
+@app.post("/classes/delete")
+def class_delete(payload: ClassIdIn):
+    with get_conn() as con:
+        ensure_classes_table(con)
+        cur = con.cursor()
+        cur.execute("DELETE FROM classes WHERE id=?", (payload.id,))
+    return {"ok": True}

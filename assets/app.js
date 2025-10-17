@@ -265,3 +265,42 @@ $('#btn-adm-sch-clear').onclick = async ()=>{
   const res = await apiPost('/schedule/clear', {kind});
   $('#adm-sch-out').textContent = res.ok ? 'Очищено.' : 'Ошибка';
 };
+
+// === Classes CRUD ===
+$('#btn-cls-save').onclick = async ()=>{
+  const id = Number($('#cls-id').value || 0);
+  const payload = {
+    id: id || null,
+    title: $('#cls-title').value,
+    school: $('#cls-school').value,
+    city: $('#cls-city').value,
+    shift: $('#cls-shift').value,
+    join_code: $('#cls-joincode').value || null,
+    info: $('#cls-info').value || null,
+  };
+  if(!payload.title){ $('#cls-save-out').textContent='Нужно название класса.'; return; }
+  const res = await apiPost('/classes', payload);
+  $('#cls-save-out').textContent = res.ok ? (payload.id ? 'Обновлено.' : 'Создано (id '+res.id+').') : 'Ошибка';
+};
+$('#btn-cls-del').onclick = async ()=>{
+  const id = Number($('#cls-id').value || 0);
+  if(!id){ $('#cls-save-out').textContent='Укажи ID для удаления.'; return; }
+  if(!confirm('Удалить класс '+id+'?')) return;
+  const res = await apiPost('/classes/delete', {id});
+  $('#cls-save-out').textContent = res.ok ? 'Удалено.' : 'Ошибка';
+};
+$('#btn-cls-search').onclick = async ()=>{
+  const q = $('#cls-q').value.trim();
+  const res = await apiGet('/classes/search?q='+encodeURIComponent(q));
+  $('#cls-list-out').textContent = JSON.stringify(res.classes||[], null, 2) || 'Не найдено';
+};
+$('#btn-cls-all').onclick = async ()=>{
+  const res = await apiGet('/classes');
+  $('#cls-list-out').textContent = JSON.stringify(res.classes||[], null, 2) || 'Пусто';
+};
+
+// === Admin Stats ===
+$('#btn-adm-stats').onclick = async ()=>{
+  const res = await apiGet('/stats');
+  $('#adm-stats-out').textContent = JSON.stringify(res, null, 2);
+};
