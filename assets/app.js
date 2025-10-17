@@ -197,3 +197,71 @@ if(!localStorage.getItem('mock_data')){
   mock.stats = { users:1, homework:2, rebuses:1, sessions:5, topClicks:[['/start',10],['ДЗ',7]] };
   saveMock();
 }
+
+/* === Admin panel === */
+$('#btn-adm-hw-save').onclick = async ()=>{
+  const date = $('#adm-hw-date').value; const text = $('#adm-hw-text').value;
+  if(!date || !text){ $('#adm-hw-out').textContent='Укажи дату и текст.'; return; }
+  const res = await apiPost('/homework', {date, text});
+  $('#adm-hw-out').textContent = res.ok ? 'Сохранено.' : 'Ошибка';
+};
+$('#btn-adm-hw-del').onclick = async ()=>{
+  const date = $('#adm-hw-date').value;
+  if(!date){ $('#adm-hw-out').textContent='Укажи дату.'; return; }
+  const res = await apiPost('/homework/delete', {date});
+  $('#adm-hw-out').textContent = res.ok ? 'Удалено.' : 'Ошибка';
+};
+
+$('#btn-adm-reb-add').onclick = async ()=>{
+  const payload = {
+    kind: $('#adm-reb-kind').value || 'word',
+    payload: $('#adm-reb-payload').value,
+    answer: $('#adm-reb-answer').value,
+    hint: $('#adm-reb-hint').value || null,
+    difficulty: $('#adm-reb-diff').value || 'medium'
+  };
+  if(!payload.payload || !payload.answer){ $('#adm-reb-out').textContent='Нужны payload и answer.'; return; }
+  const res = await apiPost('/rebuses', payload);
+  $('#adm-reb-out').textContent = res.ok ? 'Добавлено (id: '+res.id+').' : 'Ошибка';
+};
+$('#btn-adm-reb-del').onclick = async ()=>{
+  const id = $('#adm-reb-id').value;
+  if(!id){ $('#adm-reb-out').textContent='Укажи ID.'; return; }
+  const res = await apiPost('/rebuses/delete', {id: Number(id)});
+  $('#adm-reb-out').textContent = res.ok ? 'Удалено.' : 'Ошибка';
+};
+$('#btn-adm-reb-purge').onclick = async ()=>{
+  if(!confirm('Удалить ВСЕ ребусы?')) return;
+  const res = await apiPost('/rebuses/purge', {});
+  $('#adm-reb-out').textContent = res.ok ? 'Все ребусы удалены.' : 'Ошибка';
+};
+$('#btn-adm-reb-list').onclick = async ()=>{
+  const res = await apiGet('/rebuses');
+  $('#adm-reb-out').textContent = (res.items||[]).map((x,i)=>`${x.id||'?'} | [${x.difficulty}] ${x.payload} → ${x.answer}`).join('\n') || 'Пусто';
+};
+
+$('#btn-adm-user-block').onclick = async ()=>{
+  const user_id = Number($('#adm-user-id').value);
+  if(!user_id){ $('#adm-user-out').textContent='Укажи user_id.'; return; }
+  const res = await apiPost('/users/block', {user_id});
+  $('#adm-user-out').textContent = res.ok ? 'Пользователь заблокирован.' : 'Ошибка';
+};
+$('#btn-adm-user-unblock').onclick = async ()=>{
+  const user_id = Number($('#adm-user-id').value);
+  if(!user_id){ $('#adm-user-out').textContent='Укажи user_id.'; return; }
+  const res = await apiPost('/users/unblock', {user_id});
+  $('#adm-user-out').textContent = res.ok ? 'Пользователь разблокирован.' : 'Ошибка';
+};
+
+$('#btn-adm-sch-add').onclick = async ()=>{
+  const kind = $('#adm-sch-kind').value; const file_id = $('#adm-sch-fileid').value;
+  if(!file_id){ $('#adm-sch-out').textContent='Вставь Telegram file_id.'; return; }
+  const res = await apiPost('/schedule', {kind, file_id});
+  $('#adm-sch-out').textContent = res.ok ? 'Файл добавлен.' : 'Ошибка';
+};
+$('#btn-adm-sch-clear').onclick = async ()=>{
+  const kind = $('#adm-sch-kind').value;
+  if(!confirm('Очистить раздел '+kind+'?')) return;
+  const res = await apiPost('/schedule/clear', {kind});
+  $('#adm-sch-out').textContent = res.ok ? 'Очищено.' : 'Ошибка';
+};

@@ -25,6 +25,7 @@
       <button data-tab="rebuses" class="tab">🎮 Ребусы</button>
       <button data-tab="users" class="tab">👥 Пользователи</button>
       <button data-tab="classes" class="tab">🏫 Классы</button>
+      <button data-tab="admin" class="tab">🛡 Админ</button>
       <button data-tab="broadcast" class="tab">📣 Оповещения</button>
       <button data-tab="modes" class="tab">🧰 Режимы</button>
       <button data-tab="stats" class="tab">📊 Статистика</button>
@@ -106,6 +107,72 @@
           <button id="btn-classes-all">Все</button>
         </div>
         <div id="classes-out" class="box"></div>
+      </section>
+
+
+      <section id="tab-admin" class="panel">
+        <h2>🛡 Админ-панель</h2>
+        <div class="split">
+          <div class="card">
+            <h3>Домашка — добавить/обновить</h3>
+            <div class="grid">
+              <input id="adm-hw-date" type="date" />
+              <textarea id="adm-hw-text" rows="4" placeholder="Текст ДЗ…"></textarea>
+              <button id="btn-adm-hw-save">Сохранить</button>
+              <button id="btn-adm-hw-del" class="secondary">Удалить по дате</button>
+            </div>
+            <div id="adm-hw-out" class="muted"></div>
+          </div>
+          <div class="card">
+            <h3>Ребусы — управление</h3>
+            <div class="grid">
+              <input id="adm-reb-kind" placeholder="Категория (например: word)" />
+              <input id="adm-reb-payload" placeholder="Тело ребуса (текст)" />
+              <input id="adm-reb-answer" placeholder="Ответ" />
+              <input id="adm-reb-hint" placeholder="Подсказка (необязательно)" />
+              <select id="adm-reb-diff">
+                <option value="easy">easy</option>
+                <option value="medium" selected>medium</option>
+                <option value="hard">hard</option>
+              </select>
+              <button id="btn-adm-reb-add">Добавить</button>
+            </div>
+            <div class="grid">
+              <input id="adm-reb-id" type="number" placeholder="ID ребуса для удаления" />
+              <button id="btn-adm-reb-del" class="secondary">Удалить по ID</button>
+              <button id="btn-adm-reb-purge" class="secondary">Удалить все</button>
+              <button id="btn-adm-reb-list" class="secondary">Показать все</button>
+            </div>
+            <pre id="adm-reb-out" class="box"></pre>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <h3>Пользователи — блокировка</h3>
+            <div class="grid">
+              <input id="adm-user-id" type="number" placeholder="User ID" />
+              <button id="btn-adm-user-block">Заблокировать</button>
+              <button id="btn-adm-user-unblock" class="secondary">Разблокировать</button>
+            </div>
+            <div id="adm-user-out" class="muted"></div>
+          </div>
+          <div class="card">
+            <h3>Расписание — добавить файл</h3>
+            <div class="grid">
+              <select id="adm-sch-kind">
+                <option value="today">today</option>
+                <option value="tomorrow">tomorrow</option>
+                <option value="alldays">alldays</option>
+                <option value="bells">bells</option>
+              </select>
+              <input id="adm-sch-fileid" placeholder="Telegram file_id" />
+              <button id="btn-adm-sch-add">Добавить</button>
+              <button id="btn-adm-sch-clear" class="secondary">Очистить раздел</button>
+            </div>
+            <div id="adm-sch-out" class="muted"></div>
+          </div>
+        </div>
       </section>
 
       <section id="tab-broadcast" class="panel">

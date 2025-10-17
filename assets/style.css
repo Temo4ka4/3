@@ -23,3 +23,7 @@ input,select,textarea{ width:100%; background:#121522; color:var(--txt); border:
 .list{ padding-left:18px; }
 .callout{ background:#0f1320; border:1px dashed #2b3858; border-radius:12px; padding:12px; margin-top:10px; }
 footer{ padding:14px 16px; border-top:1px solid #1c1f2a; text-align:center; margin-top:24px; }
+
+.split{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px; }
+h3{ margin:8px 0 10px; }
+@media (max-width:900px){ .split{ grid-template-columns:1fr; } }

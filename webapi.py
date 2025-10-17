@@ -129,3 +129,105 @@ def stats():
         cur.execute("SELECT text, COUNT(*) c FROM events WHERE created_at >= datetime('now','-14 day') GROUP BY text ORDER BY c DESC LIMIT 8")
         top = cur.fetchall()
     return {"users":users, "homework":hws, "rebuses":reb_count, "sessions":rstats, "topClicks": top}
+
+
+from pydantic import BaseModel
+
+class HWIn(BaseModel):
+    date: str
+    text: str
+
+class HWDel(BaseModel):
+    date: str
+
+class RebusIn(BaseModel):
+    kind: str = 'word'
+    payload: str
+    answer: str
+    hint: str | None = None
+    difficulty: str = 'medium'
+
+class RebusIdIn(BaseModel):
+    id: int
+
+class ScheduleIn(BaseModel):
+    kind: str
+    file_id: str
+
+class ScheduleClearIn(BaseModel):
+    kind: str
+
+class UserIdIn(BaseModel):
+    user_id: int
+
+@app.post("/homework")
+def hw_save(payload: HWIn):
+    with get_conn() as con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO homework(hw_date, text) VALUES(?, ?) ON CONFLICT(hw_date) DO UPDATE SET text=excluded.text",
+                    (payload.date, payload.text))
+    return {"ok": True}
+
+@app.post("/homework/delete")
+def hw_delete(payload: HWDel):
+    with get_conn() as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM homework WHERE hw_date=?", (payload.date,))
+    return {"ok": True}
+
+@app.post("/rebuses")
+def rebus_add(payload: RebusIn):
+    with get_conn() as con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO rebuses(kind,payload,answer,hint,difficulty) VALUES(?,?,?,?,?)",
+                    (payload.kind, payload.payload, payload.answer, payload.hint, payload.difficulty))
+        rid = cur.lastrowid
+    return {"ok": True, "id": rid}
+
+@app.post("/rebuses/delete")
+def rebus_delete(payload: RebusIdIn):
+    with get_conn() as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM rebuses WHERE id=?", (payload.id,))
+    return {"ok": True}
+
+@app.post("/rebuses/purge")
+def rebus_purge():
+    with get_conn() as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM rebuses")
+    return {"ok": True}
+
+@app.post("/schedule")
+def schedule_add(payload: ScheduleIn):
+    with get_conn() as con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO schedules(kind,file_id,file_unique_id) VALUES(?,?,?)",
+                    (payload.kind, payload.file_id, ''))
+    return {"ok": True}
+
+@app.post("/schedule/clear")
+def schedule_clear(payload: ScheduleClearIn):
+    with get_conn() as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM schedules WHERE kind=?", (payload.kind,))
+    return {"ok": True}
+
+@app.post("/users/block")
+def user_block(payload: UserIdIn):
+    with get_conn() as con:
+        cur = con.cursor()
+        # предполагаем наличие поля muted_all (0/1) или таблицы blocks; делаем мягкий блок
+        cur.execute("UPDATE users SET muted_all=1 WHERE user_id=?", (payload.user_id,))
+        if cur.rowcount == 0:
+            # если пользователя ещё нет — создадим заглушку
+            cur.execute("INSERT INTO users(user_id, username, first_name, muted_all) VALUES(?,?,?,1) ON CONFLICT(user_id) DO UPDATE SET muted_all=1",
+                        (payload.user_id, '', '',))
+    return {"ok": True}
+
+@app.post("/users/unblock")
+def user_unblock(payload: UserIdIn):
+    with get_conn() as con:
+        cur = con.cursor()
+        cur.execute("UPDATE users SET muted_all=0 WHERE user_id=?", (payload.user_id,))
+    return {"ok": True}
